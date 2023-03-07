@@ -20,7 +20,7 @@ lazy val root = project
 
 val sjsName = "sjs"
 lazy val sjs = project
-  .in(file(s"/$sjsName"))
+  .in(file(s"./$sjsName"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     name := sjsName,

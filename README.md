@@ -53,3 +53,24 @@ You do not have to implement all these features. Choose a reasonable set.
 The expected effort here is 12-16h of work overall.
 
 As usual, mark your submission by tagging the commit you want marked with "v1.0"
+
+## Additional notes added by student
+* build.sbt was modified in line 23 to add a dot for 
+  * ./$sjsName
+* MyApp.scala was modified for
+  * def staticFileRoutes1() file path to suit this project structure
+  * def staticFileRoutes2() file path to suit this project structure
+* To ensure proper behaviour, it is best to
+  * docker to create and use new DB
+    * (if not pulled before) docker pull centos/postgresql-12-centos8 
+    * docker run -d --name myapp -e POSTGRESQL_USER=scalauser -e POSTGRESQL_PASSWORD=pwd123 -e POSTGRESQL_DATABASE=myapp -p 5432:5432 centos/postgresql-12-centos8
+    * docker exec -it myapp /bin/bash
+    * psql -d myapp -U scalauser
+    * CREATE TABLE todo(item varchar(1000));
+    * \d todo
+  * reload all sbt projects 
+  * sbt shell run sjs/fastOptJS 
+  * run MyApp.scala 
+  * sbt shell run sjs/fastOptJS 
+  * open URL manually in browser http://localhost:8000/static/index.html
+    * (do not right-click index.html and open with browser in intellij)
