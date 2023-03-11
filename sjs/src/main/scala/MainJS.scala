@@ -208,7 +208,7 @@ def contentAction(content: String): Unit = // string inside json array
 def deleteAction(idVal: String): UIEvent => Unit = _ => // does not return result, returns a function, UIEvent which returns Unit nothing
   fetch("/delete", new RequestInit { // Async request to the backend to delete the item from the DB
     method = HttpMethod.DELETE // delete method as the path or route to backend. goes to MyApp.scala line 63, @cask.delete("/delete")
-    body = idVal // the text that represents the item to be deleted from DB, if no response means successful
+    body = idVal // the primary key uuid that represents the item to be deleted from DB, if no response means successful
   })
   window.setTimeout(updatePanel,100) // After a small timeout of 100ms to allow the DB transaction to complete, refresh the panel to allow the changes to be reflected.
   ()
@@ -219,9 +219,9 @@ def updateAction(idVal: String): UIEvent => Unit = _ => // does not return resul
   val completedCol = rowData.querySelector("input[type=checkbox]").asInstanceOf[Input].checked
   val priorityCol = rowData.querySelector("select").asInstanceOf[Select].value
   val dateCol = rowData.querySelector("input[type=date]").asInstanceOf[Input].value
-
-  val wrappedUpdate = s"""{$idVal,$itemCol,$completedCol,$priorityCol, $dateCol}""" // artificially create JSON object called items with curly braces
-
+  val dateColHandle = if (dateCol == "") " " else dateCol
+  
+  val wrappedUpdate = s"""{$idVal,$itemCol,$completedCol,$priorityCol,$dateColHandle}""" // artificially create JSON object called items with curly braces
   fetch("/update", new RequestInit { // Async request to the backend to delete the item from the DB
     method = HttpMethod.PUT // delete method as the path or route to backend. goes to MyApp.scala line 63, @cask.delete("/delete")
     body = wrappedUpdate // the text that represents the item to be deleted from DB, if no response means successful
