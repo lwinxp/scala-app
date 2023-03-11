@@ -54,23 +54,45 @@ The expected effort here is 12-16h of work overall.
 
 As usual, mark your submission by tagging the commit you want marked with "v1.0"
 
-## Additional notes added by student
-* build.sbt was modified in line 23 to add a dot for 
+## App functionality
+#### 1) Items can be marked completed by checking a checkbox, which strikes out the item content
+#### 2) Item priority can be selected for (i) low; (ii) mid; (iii) high by selecting the dropdown box options. The item background will become (i) light green color for low priority; (ii) light yellow color for mid priority; and (iii) pink color for high priority.
+#### 3) Item deadlines can be tracked for (i) past deadline; (ii) on the day of deadline; and (iii) within 7 days of deadline by messages that show upon selection of the deadline in the date input box
+#### 4) Items can be deleted by clicking the delete button. This delete function has been improved as it now deletes by primary key. This fixes a bug of the lecture implementation where items are deleted by the message content, and items with same content could be deleted mistakenly.
+#### 5) Submit button (green) and Delete buttons (red) now have different color. Previously, they were all green.
+#### 6) The ordering of items will be preserved according to the sequence in which they were submitted. They will not change randomly as changes are made by the user.
+#### 7) Users are not forced to provide too much information when adding an item initially, only the item content is required. Users can update other fields including completed, priority and deadline can be later when they are ready
+#### 8) All user input and updates are persisted in the database and will persist with page refresh
+#### 9) All user input and updates will be reflected in the UI
+
+## App setup (Compulsory for the app to function)
+* build.sbt is modified in line 23 to add a dot for 
   * ./$sjsName
-* MyApp.scala was modified for
-  * def staticFileRoutes1() file path to suit this project structure
-  * def staticFileRoutes2() file path to suit this project structure
-* To ensure proper behaviour, it is best to
-  * docker to create and use new DB
-    * (if not pulled before) docker pull centos/postgresql-12-centos8 
-    * docker run -d --name myapp -e POSTGRESQL_USER=scalauser -e POSTGRESQL_PASSWORD=pwd123 -e POSTGRESQL_DATABASE=myapp -p 5432:5432 centos/postgresql-12-centos8
-    * docker exec -it myapp /bin/bash
-    * psql -d myapp -U scalauser
-    * CREATE TABLE todo(item varchar(1000));
-    * \d todo
-  * reload all sbt projects 
-  * sbt shell run sjs/fastOptJS 
-  * run MyApp.scala 
-  * sbt shell run sjs/fastOptJS 
-  * open URL manually in browser http://localhost:8000/static/index.html
-    * (do not right-click index.html and open with browser in intellij)
+* docker to create and use new PostgreSQL DB
+  * (if not pulled before) docker pull centos/postgresql-12-centos8 
+  * docker run -d --name myapp -e POSTGRESQL_USER=scalauser -e POSTGRESQL_PASSWORD=pwd123 -e POSTGRESQL_DATABASE=myapp -p 5432:5432 centos/postgresql-12-centos8
+  * docker exec -it myapp /bin/bash
+* psql commands below must be run in the PostgreSQL DB before running the app
+  * psql -d myapp -U postgres
+  * (no password required for postgres user)
+  * CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  * \q
+  * (note there is a change in user, failure to do so will lead to DB access permission error)
+  * psql -d myapp -U scalauser
+  * CREATE TABLE todo(
+      id UUID DEFAULT uuid_generate_v4 (),
+      serial SERIAL NOT NULL,
+      item VARCHAR(1000) NOT NULL,
+      completed BOOLEAN DEFAULT false,
+      priority VARCHAR(8) DEFAULT 1,
+      deadline DATE NULL,
+      PRIMARY KEY (id)
+    );
+  * \d
+  * select * from todo;
+* reload all sbt projects 
+* sbt shell run sjs/fastOptJS 
+* run MyApp.scala 
+* (if there are DB connection errors, do sbt clean for root directory and sjs directory)
+* open URL manually in browser http://localhost:8000/static/index.html
+  * (do not right-click index.html and open with browser in intellij)
